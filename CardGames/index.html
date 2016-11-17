@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Five Card Stud</title>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <div id="deck">
+
+    </div>
+    <div id="card1">
+
+    </div>
+    <div id="card2">
+
+    </div>
+    <div id="card3">
+
+    </div>
+    <div id="card4">
+
+    </div>
+    <div id="card5">
+
+    </div>
+    <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(new function () {
+            function shuffle(deck) {
+                var i = 0
+                    , j = 0
+                    , temp = null
+
+                for (i = deck.cards.length - 1; i > 0; i -= 1) {
+                    j = Math.floor(Math.random() * (i + 1))
+                    temp = deck.cards[i]
+                    deck.cards[i] = deck.cards[j]
+                    deck.cards[j] = temp
+                }
+            };
+
+            class Card {
+                constructor(suit, val) {
+                    this.suit = suit;
+                    this.val = val;
+                }
+
+
+            }
+
+            class Deck {
+                constructor() {
+                    this.cards = [];
+                    for (var i = 1; i < 14; i++) {
+                        this.cards.push(new Card('C', i));
+                        this.cards.push(new Card('D', i));
+                        this.cards.push(new Card('H', i));
+                        this.cards.push(new Card('S', i));
+                    }
+                }
+            }
+
+            var c1 = $('#card1');
+            var c2 = $('#card2');
+            var c3 = $('#card3');
+            var c4 = $('#card4');
+            var c5 = $('#card5');
+
+            var deck = new Deck();
+
+            for (var i = 0; i < deck.cards.length; i++) {
+                console.log(deck.cards[i]);
+            }
+            shuffle(deck);
+            for (var i = 0; i < deck.cards.length; i++) {
+                console.log(deck.cards[i]);
+            }
+
+        });
+
+
+    </script>
+</body>
+</html>
