@@ -3,81 +3,286 @@
 <head>
     <title>Five Card Stud</title>
     <meta charset="utf-8" />
+    <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <style>
+        .active {
+            background-color: #404040;
+        }
+    </style>
 </head>
 <body>
-    <div id="deck">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-offset-4 col-md-3">
+                <div id="deck">
+                    <img src="imgs/backs.png" />
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin:10px 0;">
+            <div class="col-md-2">
+                <div class="col-md-12">
+                    <div id="card1">
 
-    </div>
-    <div id="card1">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <button id="btn1" onclick="$(this).toggleClass('active');">Hold</button>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="col-md-12">
+                    <div id="card2">
 
-    </div>
-    <div id="card2">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <button id="btn2" onclick="$(this).toggleClass('active');">Hold</button>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="col-md-12">
+                    <div id="card3">
 
-    </div>
-    <div id="card3">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <button id="btn3" onclick="$(this).toggleClass('active');">Hold</button>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="col-md-12">
+                    <div id="card4">
 
-    </div>
-    <div id="card4">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <button id="btn4" onclick="$(this).toggleClass('active');">Hold</button>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="col-md-12">
+                    <div id="card5">
 
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <button id="btn5" onclick="$(this).toggleClass('active');">Hold</button>
+                </div>
+            </div>
+        </div>
     </div>
-    <div id="card5">
-
-    </div>
-    <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
     <script>
-        $(document).ready(new function () {
-            function shuffle(deck) {
-                var i = 0
-                    , j = 0
-                    , temp = null
-
-                for (i = deck.cards.length - 1; i > 0; i -= 1) {
-                    j = Math.floor(Math.random() * (i + 1))
-                    temp = deck.cards[i]
-                    deck.cards[i] = deck.cards[j]
-                    deck.cards[j] = temp
-                }
-            };
-
-            class Card {
-                constructor(suit, val) {
-                    this.suit = suit;
-                    this.val = val;
-                }
-
-
+        class Card {
+            constructor(suit, val) {
+                this.suit = suit;
+                this.val = val;
+                this.img = '/imgs/' + val + suit;
             }
 
-            class Deck {
-                constructor() {
-                    this.cards = [];
-                    for (var i = 1; i < 14; i++) {
-                        this.cards.push(new Card('C', i));
-                        this.cards.push(new Card('D', i));
-                        this.cards.push(new Card('H', i));
-                        this.cards.push(new Card('S', i));
+
+        }
+
+        class Deck {
+            constructor() {
+                this.cards = [];
+                for (var i = 1; i < 14; i++) {
+                    this.cards.push(new Card('C', i));
+                    this.cards.push(new Card('D', i));
+                    this.cards.push(new Card('H', i));
+                    this.cards.push(new Card('S', i));
+                }
+            }
+        }
+        class Hand {
+            constructor() {
+                var self = this;
+                this.cards = [];
+
+                this.RoyalFlush = function () {
+                    if (this.StraightFlush()) {
+                        return this.Royal();
+                    }
+                    return false;
+                }
+
+                this.StraightFlush = function () {
+                    if (this.Flush()) {
+                        return this.Straight();
+                    } else {
+                        return false;
                     }
                 }
+
+                this.Flush = function () {
+                    if (self.cards.length) {
+                        var fls = true;
+                        var suit = self.cards[0].suit;
+                        for (var i = 1; i < self.cards.length ; i++) {
+                            if (self.cards[i].suit != suit) {
+                                fls = false;
+                                break;
+                            }
+                        }
+                        return fls;
+                    }
+                    return false;
+                };
+
+                this.Straight = function () {
+                    var straight = true;
+                    if (self.cards.length) {
+                        self.cards.sort(function (a, b) {
+                            return a.val- b.val;
+                        });
+                        console.log(self.cards);
+                        var start = self.cards[0];
+
+                        for (var i = 1; i < self.cards.length; i++) {
+                            if (start.val + i != self.cards[i].val) {
+                                if (start.val == 1) {
+                                    start.val += 13;
+                                    
+                                }
+                                straight = false;
+                                break;
+                            }
+                        }
+                    } else {
+                        return false;
+                    }
+                    return straight;
+                }
+
+                this.JacksOrBetter = function () {
+                    if (self.cards.length) {
+                        var pair = false;
+                        for (var i = 0; i < self.cards.length; i++) {
+                            if (self.cards[i].val < 11) {
+                                continue;
+                            }
+                            for (var j = 0; j < self.cards.length; j++) {
+                                if (i == j) {
+                                    continue;
+                                }
+                                if (self.cards[i].val == self.cards[j].val) {
+                                    pair = true;
+                                }
+                            }
+                        }
+                        return pair;
+                    }
+                    return false;
+                };
+
+                this.Pair = function () {
+                    if (self.cards.length) {
+                        var pair = null;
+                        for (var i = 0; i < self.cards.length; i++) {
+                            for (var j = 0; j < self.cards.length; j++) {
+                                if (i == j) {
+                                    continue;
+                                }
+                                if (self.cards[i].val == self.cards[j].val) {
+                                    pair = self.cards[i].val;
+                                }
+                            }
+                        }
+                        return pair;
+                    }
+                    return null;
+                };
+                this.TwoPair = function () {
+                    var pairVal = this.Pair();
+                    if (pairVal) {
+                        var pair = null;
+                        for (var i = 0; i < self.cards.length; i++) {
+                            for (var j = 0; j < self.cards.length; j++) {
+                                if (i == j) {
+                                    continue;
+                                } else if (self.cards[i].val == pairVal || self.cards[j].val == pairVal) {
+                                    continue;
+                                }
+                                else if (self.cards[i].val == self.cards[j].val) {
+                                    pair = self.cards[i].val;
+                                }
+                            }
+                        }
+                        return pair;
+                    }
+                    return null;
+                }
             }
 
+        }
+
+        function shuffle(deck) {
+            var i = 0
+                , j = 0
+                , temp = null
+
+            for (i = deck.cards.length - 1; i > 0; i -= 1) {
+                j = Math.floor(Math.random() * (i + 1))
+                temp = deck.cards[i]
+                deck.cards[i] = deck.cards[j]
+                deck.cards[j] = temp
+            }
+        };
+
+        function MakeAHand() {
             var c1 = $('#card1');
             var c2 = $('#card2');
             var c3 = $('#card3');
             var c4 = $('#card4');
             var c5 = $('#card5');
-
+            var b1 = $('#btn1');
+            var b2 = $('#btn2');
+            var b3 = $('#btn3');
+            var b4 = $('#btn4');
+            var b5 = $('#btn5');
+            var cards = [c1, c2, c3, c4, c5];
+            var buttons = [b1, b2, b3, b4, b5];
             var deck = new Deck();
+            var hand = new Hand();
 
-            for (var i = 0; i < deck.cards.length; i++) {
-                console.log(deck.cards[i]);
-            }
             shuffle(deck);
-            for (var i = 0; i < deck.cards.length; i++) {
-                console.log(deck.cards[i]);
+            deck.cards.sort(function (a, b) {
+                if (a.val == 1) {
+                    return -1;
+                }
+                if (a.suit == b.suit) {
+                    return b.val - a.val;
+                }
+                return a.suit.localeCompare(b.suit);
+            })
+            for (var i = 0; i < 5; i++) {
+                var card = deck.cards.shift();
+                cards[i].html('<img src="' + card.img + '.png" />');
+                buttons[i].val(i);
+                hand.cards.push(card);
             }
+            console.log(hand);
+            console.log(hand.Flush());
+            console.log(hand.JacksOrBetter());
+            console.log(hand.Pair());
+            console.log(hand.TwoPair());
+            console.log(hand.Straight());
+            console.log(hand.StraightFlush());
+        };
 
+
+        $(document).ready(new function () {
+            MakeAHand();
         });
-
 
     </script>
 </body>
