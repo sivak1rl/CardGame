@@ -72,8 +72,9 @@
                 </div>
             </div>
             <div class="col-md-3">
+                <input type="hidden" id="betVal" value="0" />
+
                 <div id="bet">
-                    <input type="hidden" id="betVal" value="0" />
                     Current bet: 0 chips
                 </div>
             </div>
@@ -353,15 +354,17 @@
             $('#deal').attr("disabled");
         };
 
+        var currBet = 0;
         $(document).ready(function () {
-
-            var currBet = $('#betVal').val();
+            $('#betVal').val(currBet);
 
             console.log(currBet);
         });
 
         function bet() {
             currBet += 5;
+            $('#betVal').val(currBet);
+            $('#bet').text("Current bet: " + currBet + " chips");
             $('#deal').removeAttr("disabled");
         };
 
