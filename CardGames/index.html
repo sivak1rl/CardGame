@@ -35,18 +35,12 @@
 
                     </div>
                 </div>
-                <div class="col-md-12">
-                    <button id="btn1" onclick="$(this).toggleClass('active');">Hold</button>
-                </div>
             </div>
             <div class="col-md-2">
                 <div class="col-md-12">
                     <div id="card2">
 
                     </div>
-                </div>
-                <div class="col-md-12">
-                    <button id="btn2" onclick="$(this).toggleClass('active');">Hold</button>
                 </div>
             </div>
             <div class="col-md-2">
@@ -55,18 +49,12 @@
 
                     </div>
                 </div>
-                <div class="col-md-12">
-                    <button id="btn3" onclick="$(this).toggleClass('active');">Hold</button>
-                </div>
             </div>
             <div class="col-md-2">
                 <div class="col-md-12">
                     <div id="card4">
 
                     </div>
-                </div>
-                <div class="col-md-12">
-                    <button id="btn4" onclick="$(this).toggleClass('active');">Hold</button>
                 </div>
             </div>
             <div class="col-md-2">
@@ -75,13 +63,30 @@
 
                     </div>
                 </div>
-                <div class="col-md-12">
-                    <button id="btn5" onclick="$(this).toggleClass('active');">Hold</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div id="chips">
+                    100 chips
                 </div>
+            </div>
+            <div class="col-md-3">
+                <div id="bet">
+                    <input type="hidden" id="betVal" value="0" />
+                    Current bet: 0 chips
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button onclick="MakeAHand()" disabled class="btn btn-secondary-success" id="deal">Deal hand</button>
+            </div>
+            <div class="col-md-3">
+                <button onclick="bet()" class="btn btn-secondary-info">Bet 5 chips</button>
             </div>
         </div>
     </div>
     <script>
+
         class Card {
             constructor(suit, val) {
                 this.suit = suit;
@@ -108,16 +113,28 @@
                 var self = this;
                 this.cards = [];
 
+                this.Royal = function () {
+                    self.cards.sort(function (a, b) {
+                        return a.val < b.val ? -1 : 1;
+                    });
+                    for (var i = 0; i < self.cards.length; i++) {
+                        if (!($.inArray(self.cards[i].val, [1, 10, 11, 12, 13, 14]))) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+
                 this.RoyalFlush = function () {
-                    if (this.StraightFlush()) {
-                        return this.Royal();
+                    if (self.StraightFlush()) {
+                        return self.Royal();
                     }
                     return false;
                 }
 
                 this.StraightFlush = function () {
                     if (this.Flush()) {
-                        return this.Straight();
+                        return self.Straight();
                     } else {
                         return false;
                     }
@@ -142,16 +159,15 @@
                     var straight = true;
                     if (self.cards.length) {
                         self.cards.sort(function (a, b) {
-                            return a.val- b.val;
+                            return a.val - b.val;
                         });
-                        console.log(self.cards);
                         var start = self.cards[0];
 
                         for (var i = 1; i < self.cards.length; i++) {
                             if (start.val + i != self.cards[i].val) {
                                 if (start.val == 1) {
                                     start.val += 13;
-                                    //TODO: deal with Aces
+                                    return self.Straight();
                                 }
                                 straight = false;
                                 break;
@@ -221,6 +237,40 @@
                     }
                     return null;
                 }
+
+                this.FullHouse = function () {
+                    if (this.TwoPair()) {
+                        if (this.nOfAKind() >= 3) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                this.nOfAKind = function () {
+                    var pairVal = this.Pair();
+                    if (pairVal) {
+                        var countThisCard = 0;
+                        for (var i = 0; i < self.cards.length; i++) {
+                            if (self.cards[i].val == pairVal) {
+                                countThisCard++;
+                            }
+                        }
+                        if (countThisCard === 2) {
+                            if (this.TwoPair()) {
+                                pairVal = this.TwoPair();
+                                var countThisCard = 0;
+                                for (var i = 0; i < self.cards.length; i++) {
+                                    if (self.cards[i].val == pairVal) {
+                                        countThisCard++;
+                                    }
+                                }
+                            }
+                        }
+                        return countThisCard;
+                    }
+                    return 0;
+                }
             }
 
         }
@@ -255,34 +305,65 @@
             var hand = new Hand();
 
             shuffle(deck);
-            deck.cards.sort(function (a, b) {
-                if (a.val == 1) {
-                    return -1;
-                }
-                if (a.suit == b.suit) {
-                    return b.val - a.val;
-                }
-                return a.suit.localeCompare(b.suit);
-            })
+            //deck.cards.sort(function (a, b) {
+            //    if (a.suit == "C") {
+            //        return 1000;
+            //    } else {
+            //        if (a.val == 1) {
+            //            return -1000;
+            //        }
+            //        if (a.val < b.val) {
+            //            return 1;
+            //        }
+            //        if (a.val > b.val) {
+            //            return -1;
+            //        }
+            //    }
+            //})
             for (var i = 0; i < 5; i++) {
                 var card = deck.cards.shift();
                 cards[i].html('<img src="' + card.img + '.png" />');
                 buttons[i].val(i);
                 hand.cards.push(card);
             }
-            console.log(hand);
-            console.log(hand.Flush());
-            console.log(hand.JacksOrBetter());
-            console.log(hand.Pair());
-            console.log(hand.TwoPair());
-            console.log(hand.Straight());
-            console.log(hand.StraightFlush());
+            if (hand.RoyalFlush()) {
+                console.log("royal flush: 1000x winnings!");
+            } else if (hand.StraightFlush()) {
+                console.log("straight flush: 500x winnings!");
+            } else if (hand.nOfAKind() == 4) {
+                console.log("4 of a kind: 250x winnings");
+            } else if (hand.FullHouse()) {
+                console.log("full house: 100x winnings");
+            } else if (hand.Flush()) {
+                console.log("flush: 50x winnings");
+            } else if (hand.Straight()) {
+                console.log("straight: 25x winnings");
+            } else if (hand.nOfAKind() == 3) {
+                console.log("3 of a kind: 10x winnings");
+            } else if (hand.TwoPair()) {
+                console.log("2 pair: 5x winnings");
+            } else if (hand.JacksOrBetter()) {
+                console.log("Jacks or better: 3x winnings");
+            } else if (hand.Pair()) {
+                console.log("pair: 2x winnings");
+            } else {
+                console.log("YOU LOSE!");
+            }
+
+            $('#deal').attr("disabled");
         };
 
+        $(document).ready(function () {
 
-        $(document).ready(new function () {
-            MakeAHand();
+            var currBet = $('#betVal').val();
+
+            console.log(currBet);
         });
+
+        function bet() {
+            currBet += 5;
+            $('#deal').removeAttr("disabled");
+        };
 
     </script>
 </body>
